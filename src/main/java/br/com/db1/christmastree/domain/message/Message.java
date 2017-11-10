@@ -39,6 +39,9 @@ public class Message implements Serializable {
 	@Column(name = "message_read", nullable = false)
 	private Boolean read = FALSE;
 
+	@Column(name = "home_office", nullable = false)
+	private Boolean homeHoffice;
+
 	public Long getId() {
 		return id;
 	}
@@ -65,5 +68,9 @@ public class Message implements Serializable {
 
 	public void changeToRead() {
 		read = TRUE;
+	}
+
+	public Boolean getHomeHoffice() {
+		return homeHoffice;
 	}
 }

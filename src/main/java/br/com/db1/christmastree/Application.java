@@ -7,11 +7,13 @@ import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
 import org.springframework.scheduling.annotation.EnableAsync;
+import org.springframework.scheduling.annotation.EnableScheduling;
 
 import java.util.Properties;
 
 @SpringBootApplication
 @EnableAsync
+@EnableScheduling
 public class Application {
 
 	public static void main(String[] args) {
