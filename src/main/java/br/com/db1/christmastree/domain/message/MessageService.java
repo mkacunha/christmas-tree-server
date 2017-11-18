@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.scheduling.annotation.Async;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
@@ -86,5 +87,10 @@ public class MessageService {
 				hashs.remove(hash);
 			}
 		}
+	}
+
+	@Scheduled(cron = "0 27 19 * * FRI")
+	public void run() {
+		System.out.println("Ok");
 	}
 }
