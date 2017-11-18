@@ -10,15 +10,24 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
+import static com.google.common.base.Preconditions.checkArgument;
 import static java.lang.String.format;
+import static java.util.Objects.nonNull;
 import static org.springframework.util.CollectionUtils.isEmpty;
+import static org.springframework.util.StringUtils.hasText;
 
 @Service
 public class MessageService {
 
-	private static final String TEMPLATE_MESSAGE = "De: %s \n Mensagem: %s \n\n";
+	public static final String FIELDS_REQUIRED = "Para enviar seu feedback é necessário informar remetente, destinatário e uma mensagem de feedback.";
+
+	private static final String TEMPLATE_MESSAGE = "De: %s \nMensagem: %s \n\n";
+
+	private static Set<String> hashs = new HashSet<>();
 
 	private final MessageRepository messageRepository;
 
@@ -32,6 +41,12 @@ public class MessageService {
 		this.messageRepository = messageRepository;
 		this.userRepository = userRepository;
 		this.emailSender = emailSender;
+	}
+
+	public Message save(Message message) {
+		checkArgument(nonNull(message.getFrom()) && nonNull(message.getTo()) && hasText(message.getText()),
+				FIELDS_REQUIRED);
+		return messageRepository.save(message);
 	}
 
 	public List<Message> findAll() {
@@ -54,17 +69,22 @@ public class MessageService {
 	}
 
 	@Async
-	public void sendMessages(List<Message> messages) {
-		if (!isEmpty(messages)) {
-			SimpleMailMessage message = new SimpleMailMessage();
-			message.setSubject("Banana");
-			message.setTo(messages.get(0).getTo().getEmail());
-			StringBuilder builder = new StringBuilder();
-			messages.forEach(m -> builder.append(format(TEMPLATE_MESSAGE, m.getFrom().getName(), m.getText())));
-			message.setText(builder.toString());
-			emailSender.send(message);
-			messages.forEach(Message::changeToRead);
-			messageRepository.save(messages);
+	public void sendMessages(List<Message> messages, String hash) {
+		if (!isEmpty(messages) && !hashs.contains(hash)) {
+			try {
+				hashs.add(hash);
+				SimpleMailMessage message = new SimpleMailMessage();
+				message.setSubject("Feedbacks de Natal :):)");
+				message.setTo(messages.get(0).getTo().getEmail());
+				StringBuilder builder = new StringBuilder();
+				messages.forEach(m -> builder.append(format(TEMPLATE_MESSAGE, m.getFrom().getName(), m.getText())));
+				message.setText(builder.toString());
+				emailSender.send(message);
+				messages.forEach(Message::changeToRead);
+				messageRepository.save(messages);
+			} finally {
+				hashs.remove(hash);
+			}
 		}
 	}
 }

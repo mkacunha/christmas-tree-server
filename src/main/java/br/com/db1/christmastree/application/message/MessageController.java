@@ -15,6 +15,8 @@ import static org.springframework.web.bind.annotation.RequestMethod.GET;
 @CrossOrigin(origins = "*")
 public class MessageController {
 
+	public static final String ERROR_SAVE_FEEDBACK = "Não foi possível enviar seu Feedback, entre em contato com CBPGP.";
+
 	private final MessageService service;
 
 	@Autowired
@@ -24,8 +26,13 @@ public class MessageController {
 
 	@PostMapping
 	public ResponseEntity save(@RequestBody Message message) {
-		System.out.println(message);
-		return ResponseEntity.ok(message);
+		try {
+			return ResponseEntity.ok(service.save(message));
+		} catch (IllegalArgumentException e) {
+			return ResponseEntity.badRequest().body(e.getMessage());
+		} catch (Exception e) {
+			return ResponseEntity.badRequest().body(ERROR_SAVE_FEEDBACK);
+		}
 	}
 
 	@RequestMapping(method = GET)
@@ -47,7 +54,7 @@ public class MessageController {
 	public ResponseEntity readMessages(@PathVariable("hash") String hash) {
 		try {
 			final List<Message> messages = service.findMessagesByHash(hash);
-			service.sendMessages(messages);
+			service.sendMessages(messages, hash);
 			return ResponseEntity.ok(messages.size());
 		} catch (Exception e) {
 			return ResponseEntity.badRequest().body(e.getMessage());
