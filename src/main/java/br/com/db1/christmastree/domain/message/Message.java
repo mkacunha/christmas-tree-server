@@ -40,7 +40,7 @@ public class Message implements Serializable {
 	private Boolean read = FALSE;
 
 	@Column(name = "home_office", nullable = false)
-	private Boolean homeHoffice;
+	private Boolean homeOffice;
 
 	public Long getId() {
 		return id;
@@ -71,6 +71,6 @@ public class Message implements Serializable {
 	}
 
 	public Boolean getHomeHoffice() {
-		return homeHoffice;
+		return homeOffice;
 	}
 }

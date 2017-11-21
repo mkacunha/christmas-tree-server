@@ -10,10 +10,8 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
-import java.util.Date;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
+import java.util.stream.Collectors;
 
 import static com.google.common.base.Preconditions.checkArgument;
 import static java.lang.String.format;
@@ -64,9 +62,17 @@ public class MessageService {
 
 	public List<Message> findMessagesByHash(String hash) {
 		final User user = userRepository.findByHash(hash)
-										.orElseThrow(
-												new UserNotFoundException(format("Usuário %s não encontrado.", hash)));
+				.orElseThrow(
+						new UserNotFoundException(format("Usuário %s não encontrado.", hash)));
 		return messageRepository.findAllMessageByUserAndNotRead(user);
+	}
+
+	private void findMessagesHomeOffice() {
+		List<Message> dataBaseMessages = messageRepository.findAllMessageByHomeOfficeAndNotRead();
+		Map<String, List<Message>> messagesGroupByHash = dataBaseMessages.stream()
+				.collect(Collectors.groupingBy(o -> o.getTo().getHash()));
+		messagesGroupByHash.forEach((hash, messages) ->
+				this.sendMessages(messages, hash));
 	}
 
 	@Async
@@ -89,8 +95,8 @@ public class MessageService {
 		}
 	}
 
-	@Scheduled(cron = "0 27 19 * * FRI")
-	public void run() {
-		System.out.println("Ok");
+	@Scheduled(cron = "0 00 17 * * FRI")
+	public void enviarEmailHomeOffice() {
+		findMessagesHomeOffice();
 	}
 }

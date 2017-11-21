@@ -9,6 +9,7 @@ import org.springframework.stereotype.Repository;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 import static javax.persistence.TemporalType.DATE;
 
@@ -23,8 +24,7 @@ public interface MessageRepository extends CrudRepository<Message, Long> {
 			"WHERE m.to = :user AND m.read = false")
 	List<Message> findAllMessageByUserAndNotRead(@Param("user") User user);
 
-//	@Query("SELECT m FROM Message m " +
-//			"INNER JOIN m.to u " +
-//			"WHERE u.hash = :hash AND m.read = false")
-//	List<Message> findAllMessageByUserAndNotRead(@Param("hash") User hash);
+	@Query("SELECT m FROM Message m " +
+			"WHERE m.read = false AND m.homeOffice = true")
+	List<Message> findAllMessageByHomeOfficeAndNotRead();
 }

@@ -1,0 +1,8 @@
+FROM java:8-jre-alpine
+
+ARG jarfile=christmas-tree-0.0.1-SNAPSHOT.jar
+
+VOLUME /tmp
+
+ADD target/${jarfile} /opt/christmastree/app.jar
+ENTRYPOINT ["sh", "-c", "java $JAVA_OPTS -DSMTP_ADDRESS=$SMTP_ADDRESS -DSMTP_USERNAME=$SMTP_USERNAME -DSMTP_PASSWORD=$SMTP_PASSWORD -DDATABASE_URL=$DATABASE_URL -DDATABASE_USER=$DATABASE_USER -DDATABASE_PASSWORD=$DATABASE_PASSWORD -jar /opt/christmastree/app.jar"]
