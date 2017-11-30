@@ -1,13 +1,11 @@
 package br.com.db1.christmastree.domain.message;
 
-import br.com.db1.christmastree.domain.user.User;
-
 import javax.persistence.*;
 import java.io.Serializable;
 import java.util.Date;
 
+import static java.lang.Boolean.*;
 import static java.lang.Boolean.FALSE;
-import static java.lang.Boolean.TRUE;
 import static javax.persistence.GenerationType.IDENTITY;
 import static javax.persistence.TemporalType.DATE;
 
@@ -21,13 +19,23 @@ public class Message implements Serializable {
 	@GeneratedValue(strategy = IDENTITY)
 	private Long id;
 
-	@ManyToOne
-	@JoinColumn(name = "user_from_fk", nullable = false)
-	private User from;
+	@Column(nullable = false)
+	private String  emailFrom;
 
-	@ManyToOne
-	@JoinColumn(name = "user_to_fk", nullable = false)
-	private User to;
+	@Column(nullable = false)
+	private String  rfidFrom;
+
+	@Column(nullable = false)
+	private String  nameFrom;
+
+	@Column(nullable = false)
+	private String  emailTo;
+
+	@Column(nullable = false)
+	private String  rfidTo;
+
+	@Column(nullable = false)
+	private String  nameTo;
 
 	@Column(name = "message_text", nullable = false, length = 1000)
 	private String text;
@@ -39,38 +47,98 @@ public class Message implements Serializable {
 	@Column(name = "message_read", nullable = false)
 	private Boolean read = FALSE;
 
-	@Column(name = "home_office", nullable = false)
-	private Boolean homeOffice;
+	@Column(nullable = false)
+	private Boolean isRemote = FALSE;
 
 	public Long getId() {
 		return id;
 	}
 
-	public User getFrom() {
-		return from;
+	public void setId(Long id) {
+		this.id = id;
 	}
 
-	public User getTo() {
-		return to;
+	public String getEmailFrom() {
+		return emailFrom;
+	}
+
+	public void setEmailFrom(String emailFrom) {
+		this.emailFrom = emailFrom;
+	}
+
+	public String getRfidFrom() {
+		return rfidFrom;
+	}
+
+	public void setRfidFrom(String rfidFrom) {
+		this.rfidFrom = rfidFrom;
+	}
+
+	public String getNameFrom() {
+		return nameFrom;
+	}
+
+	public void setNameFrom(String nameFrom) {
+		this.nameFrom = nameFrom;
+	}
+
+	public String getEmailTo() {
+		return emailTo;
+	}
+
+	public void setEmailTo(String emailTo) {
+		this.emailTo = emailTo;
+	}
+
+	public String getRfidTo() {
+		return rfidTo;
+	}
+
+	public void setRfidTo(String rfidTo) {
+		this.rfidTo = rfidTo;
+	}
+
+	public String getNameTo() {
+		return nameTo;
+	}
+
+	public void setNameTo(String nameTo) {
+		this.nameTo = nameTo;
 	}
 
 	public String getText() {
 		return text;
 	}
 
+	public void setText(String text) {
+		this.text = text;
+	}
+
 	public Date getDate() {
 		return date;
+	}
+
+	public void setDate(Date date) {
+		this.date = date;
 	}
 
 	public Boolean getRead() {
 		return read;
 	}
 
-	public void changeToRead() {
-		read = TRUE;
+	public void setRead(Boolean read) {
+		this.read = read;
 	}
 
-	public Boolean getHomeHoffice() {
-		return homeOffice;
+	public Boolean getRemote() {
+		return isRemote;
+	}
+
+	public void setRemote(Boolean remote) {
+		isRemote = remote;
+	}
+
+	public void changeToRead() {
+		read = TRUE;
 	}
 }

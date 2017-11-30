@@ -1,6 +1,7 @@
 package br.com.db1.christmastree.application.message;
 
 import br.com.db1.christmastree.domain.message.Message;
+import br.com.db1.christmastree.domain.message.MessageDTO;
 import br.com.db1.christmastree.domain.message.MessageService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -25,7 +26,7 @@ public class MessageController {
 	}
 
 	@PostMapping
-	public ResponseEntity save(@RequestBody Message message) {
+	public ResponseEntity save(@RequestBody MessageDTO message) {
 		try {
 			return ResponseEntity.ok(service.save(message));
 		} catch (IllegalArgumentException e) {
@@ -35,10 +36,16 @@ public class MessageController {
 		}
 	}
 
+	@RequestMapping(value = "/by-name", method = GET)
+	public ResponseEntity findAllByname(@RequestParam("name") String name) {
+		return ResponseEntity.ok(service.findAllByName(name));
+	}
+
 	@RequestMapping(method = GET)
 	public ResponseEntity findAll() {
 		return ResponseEntity.ok(service.findAll());
 	}
+
 
 	@RequestMapping(value = "/count", method = GET)
 	public ResponseEntity count() {
@@ -53,7 +60,7 @@ public class MessageController {
 	@RequestMapping(value = "/read/{hash}", method = GET)
 	public ResponseEntity readMessages(@PathVariable("hash") String hash) {
 		try {
-			final List<Message> messages = service.findMessagesByHash(hash);
+			final List<Message> messages = service.findMessagesByRfid(hash);
 			service.sendMessages(messages, hash);
 			return ResponseEntity.ok(messages.size());
 		} catch (Exception e) {

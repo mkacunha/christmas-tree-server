@@ -1,6 +1,6 @@
 package br.com.db1.christmastree.domain.message;
 
-import br.com.db1.christmastree.domain.user.User;
+import br.com.db1.christmastree.domain.user.UserDTO;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.jpa.repository.Temporal;
 import org.springframework.data.repository.CrudRepository;
@@ -9,7 +9,6 @@ import org.springframework.stereotype.Repository;
 
 import java.util.Date;
 import java.util.List;
-import java.util.Optional;
 
 import static javax.persistence.TemporalType.DATE;
 
@@ -21,10 +20,10 @@ public interface MessageRepository extends CrudRepository<Message, Long> {
 	long countByDate(@Temporal(DATE) Date date);
 
 	@Query("SELECT m FROM Message m " +
-			"WHERE m.to = :user AND m.read = false")
-	List<Message> findAllMessageByUserAndNotRead(@Param("user") User user);
+			"WHERE m.rfidTo = :rfid AND m.read = false")
+	List<Message> findAllMessageByMailAndNotRead(@Param("rfid") String rfid);
 
 	@Query("SELECT m FROM Message m " +
-			"WHERE m.read = false AND m.homeOffice = true")
+			"WHERE m.read = false AND m.isRemote = true")
 	List<Message> findAllMessageByHomeOfficeAndNotRead();
 }
