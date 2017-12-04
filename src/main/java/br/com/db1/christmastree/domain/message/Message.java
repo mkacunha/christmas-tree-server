@@ -20,12 +20,6 @@ public class Message implements Serializable {
 	private Long id;
 
 	@Column(nullable = false)
-	private String  emailFrom;
-
-	@Column(nullable = false)
-	private String  rfidFrom;
-
-	@Column(nullable = false)
 	private String  nameFrom;
 
 	@Column(nullable = false)
@@ -56,22 +50,6 @@ public class Message implements Serializable {
 
 	public void setId(Long id) {
 		this.id = id;
-	}
-
-	public String getEmailFrom() {
-		return emailFrom;
-	}
-
-	public void setEmailFrom(String emailFrom) {
-		this.emailFrom = emailFrom;
-	}
-
-	public String getRfidFrom() {
-		return rfidFrom;
-	}
-
-	public void setRfidFrom(String rfidFrom) {
-		this.rfidFrom = rfidFrom;
 	}
 
 	public String getNameFrom() {

@@ -13,7 +13,7 @@ public class MessageDTO implements Serializable {
 
 	private Long id;
 
-	private UserDTO from;
+	private String nameFrom;
 
 	private UserDTO to;
 
@@ -33,12 +33,12 @@ public class MessageDTO implements Serializable {
 		this.id = id;
 	}
 
-	public UserDTO getFrom() {
-		return from;
+	public String getNameFrom() {
+		return nameFrom;
 	}
 
-	public void setFrom(UserDTO from) {
-		this.from = from;
+	public void setNameFrom(String nameFrom) {
+		this.nameFrom = nameFrom;
 	}
 
 	public UserDTO getTo() {

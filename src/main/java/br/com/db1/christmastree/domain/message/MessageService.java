@@ -47,7 +47,7 @@ public class MessageService {
 	}
 
 	public Message save(MessageDTO message) {
-		checkArgument(nonNull(message.getTo()) && nonNull(message.getFrom()) && hasText(message.getText()),
+		checkArgument(nonNull(message.getTo()) && nonNull(message.getNameFrom()) && hasText(message.getText()),
 				FIELDS_REQUIRED);
 		return messageRepository.save(messageTranslator.translatorDTOToMessage(message));
 	}
@@ -104,7 +104,7 @@ public class MessageService {
 		}
 	}
 
-	@Scheduled(cron = "0 00 17 * * FRI")
+	@Scheduled(cron = "0 00 17 * * *")
 	public void enviarEmailHomeOffice() {
 		findMessagesHomeOffice();
 	}
