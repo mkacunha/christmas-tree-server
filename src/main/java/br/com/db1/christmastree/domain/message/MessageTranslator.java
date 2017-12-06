@@ -1,6 +1,7 @@
 package br.com.db1.christmastree.domain.message;
 
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 
 @Component
 public class MessageTranslator {
@@ -14,7 +15,10 @@ public class MessageTranslator {
 		message.setEmailTo(dto.getTo().getEmail());
 		message.setNameFrom(dto.getNameFrom());
 		message.setNameTo(dto.getTo().getName());
-		message.setRfidTo(dto.getTo().getRfid());
+		if (!StringUtils.isEmpty(dto.getTo().getRfid())) {
+			Long rfid = Long.valueOf(dto.getTo().getRfid());
+			message.setRfidTo(String.valueOf(rfid));
+		}
 		return message;
 	}
 

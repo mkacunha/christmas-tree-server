@@ -25,7 +25,7 @@ public class Message implements Serializable {
 	@Column(nullable = false)
 	private String  emailTo;
 
-	@Column(nullable = false)
+	@Column
 	private String  rfidTo;
 
 	@Column(nullable = false)

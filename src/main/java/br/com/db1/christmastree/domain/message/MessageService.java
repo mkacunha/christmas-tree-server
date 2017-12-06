@@ -5,13 +5,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
-import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
+import javax.mail.MessagingException;
+import javax.mail.internet.MimeMessage;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -26,11 +28,13 @@ public class MessageService {
 
 	private static final String FIELDS_REQUIRED = "Para enviar seu feedback é necessário informar remetente, destinatário e uma mensagem de feedback.";
 
-	private static final String TEMPLATE_MESSAGE = "De: %s \nMensagem: %s \n\n";
+	private static final String TEMPLATE_MESSAGE = "<div><p><strong>De: </strong>%s</p><p style=\"text-align: justify\"><strong>Feedback: </strong>%s</p></div><hr style=\"margin-top: 30px;margin-bottom: 30px\" />";
 
 	private static final String URL = "http://192.168.208.164:32568/api/collaborator/getbyname/?collaboratorName=";
 
-	private static Set<String> rfids = new HashSet<>();
+	private final static String TEMPLATE_BASE = "<body><div style=\"width: 600px; margin: auto;\"><p><strong>Você recebeu feedbacks de natal :)</strong></p><p style=\"padding-bottom: 30px;\"><strong>Veja o que seus amigos tem a dizer para você:</strong></p> %s <p><strong>Envie seu feedback <a href=\"http://natal.db1.com.br\" target=\"_blank\">aqui</a> e faça o natal de alguém mais feliz.</strong></p><p><strong>Feliz Natal!!!</strong></p></div></body>";
+
+	private static Set<String> keys = new HashSet<>();
 
 	private final MessageRepository messageRepository;
 
@@ -59,7 +63,7 @@ public class MessageService {
 	public List<UserDTO> findAllByName(String name) {
 		RestTemplate restTemplate = new RestTemplate();
 		ResponseEntity<List<UserDTO>> user = restTemplate
-				.exchange(URL + name, HttpMethod.GET, null,  new ParameterizedTypeReference<List<UserDTO>>() {
+				.exchange(URL + name, HttpMethod.GET, null, new ParameterizedTypeReference<List<UserDTO>>() {
 				});
 		return user.getBody();
 	}
@@ -73,33 +77,38 @@ public class MessageService {
 	}
 
 	public List<Message> findMessagesByRfid(String rfid) {
-		return messageRepository.findAllMessageByMailAndNotRead(rfid);
+		String convertedRfid = String.valueOf(Long.valueOf(rfid));
+		System.out.println("------ Convertendo Hash -------- " + convertedRfid);
+		return messageRepository.findAllMessageByMailAndNotRead(convertedRfid);
 	}
 
 	private void findMessagesHomeOffice() {
 		List<Message> dataBaseMessages = messageRepository.findAllMessageByHomeOfficeAndNotRead();
 		Map<String, List<Message>> messagesGroupByRfid = dataBaseMessages.stream()
-				.collect(Collectors.groupingBy(Message::getRfidTo));
-		messagesGroupByRfid.forEach((hash, messages) ->
-				this.sendMessages(messages, hash));
+				.collect(Collectors.groupingBy(Message::getEmailTo));
+		messagesGroupByRfid.forEach((email, messages) ->
+				this.sendMessages(messages, email));
 	}
 
 	@Async
-	public void sendMessages(List<Message> messages, String hash) {
-		if (!isEmpty(messages) && !rfids.contains(hash)) {
+	public void sendMessages(List<Message> messages, String email) {
+		if (!isEmpty(messages) && !keys.contains(email)) {
 			try {
-				rfids.add(hash);
-				SimpleMailMessage message = new SimpleMailMessage();
-				message.setSubject("Feedbacks de Natal :):)");
-				message.setTo(messages.get(0).getEmailTo());
+				keys.add(email);
+				MimeMessage mimeMessage = emailSender.createMimeMessage();
+				MimeMessageHelper mimeMessageHelper = new MimeMessageHelper(mimeMessage);
+				mimeMessageHelper.setSubject("Feedbacks de Natal :):)");
+				mimeMessageHelper.setTo(messages.get(0).getEmailTo());
 				StringBuilder builder = new StringBuilder();
 				messages.forEach(m -> builder.append(format(TEMPLATE_MESSAGE, m.getNameFrom(), m.getText())));
-				message.setText(builder.toString());
-				emailSender.send(message);
+				mimeMessageHelper.setText(String.format(TEMPLATE_BASE, builder.toString()), true);
+				emailSender.send(mimeMessage);
 				messages.forEach(Message::changeToRead);
 				messageRepository.save(messages);
+			} catch (MessagingException e) {
+				System.out.println(e.getMessage());
 			} finally {
-				rfids.remove(hash);
+				keys.remove(email);
 			}
 		}
 	}

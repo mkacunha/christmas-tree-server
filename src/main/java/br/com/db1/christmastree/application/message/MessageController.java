@@ -60,12 +60,13 @@ public class MessageController {
 	@RequestMapping(value = "/read/{hash}", method = GET)
 	public ResponseEntity readMessages(@PathVariable("hash") String hash) {
 		try {
+			System.out.println("------ Enviando Mensagem -------- " + hash);
 			final List<Message> messages = service.findMessagesByRfid(hash);
 			service.sendMessages(messages, hash);
+			System.out.println("------ Mensagem Enviada -------- " + hash);
 			return ResponseEntity.ok(messages.size());
 		} catch (Exception e) {
 			return ResponseEntity.badRequest().body(e.getMessage());
 		}
 	}
-
 }
