@@ -34,6 +34,8 @@ public class MessageService {
 
 	private final static String TEMPLATE_BASE = "<body><div style=\"width: 600px; margin: auto;\"><p><strong>Você recebeu feedbacks de natal :)</strong></p><p style=\"padding-bottom: 30px;\"><strong>Veja o que seus amigos tem a dizer para você:</strong></p> %s <p><strong>Envie seu feedback <a href=\"http://natal.db1.com.br\" target=\"_blank\">aqui</a> e faça o natal de alguém mais feliz.</strong></p><p><strong>Feliz Natal!!!</strong></p></div></body>";
 
+	public static final String MAXIMO_CARACTERES = "Seu feedback deve ter no máximo 5000 caracteres.";
+
 	private static Set<String> keys = new HashSet<>();
 
 	private final MessageRepository messageRepository;
@@ -53,6 +55,7 @@ public class MessageService {
 	public Message save(MessageDTO message) {
 		checkArgument(nonNull(message.getTo()) && nonNull(message.getNameFrom()) && hasText(message.getText()),
 				FIELDS_REQUIRED);
+		checkArgument(message.getText().length() <= 5000, MAXIMO_CARACTERES);
 		return messageRepository.save(messageTranslator.translatorDTOToMessage(message));
 	}
 
@@ -85,7 +88,8 @@ public class MessageService {
 	private void findMessagesHomeOffice() {
 		List<Message> dataBaseMessages = messageRepository.findAllMessageByHomeOfficeAndNotRead();
 		Map<String, List<Message>> messagesGroupByRfid = dataBaseMessages.stream()
-				.collect(Collectors.groupingBy(Message::getEmailTo));
+																		 .collect(Collectors
+																				 .groupingBy(Message::getEmailTo));
 		messagesGroupByRfid.forEach((email, messages) ->
 				this.sendMessages(messages, email));
 	}
