@@ -13,7 +13,7 @@ import static org.springframework.web.bind.annotation.RequestMethod.GET;
 
 @RestController
 @RequestMapping(value = "/messages")
-@CrossOrigin(origins = { "http://192.168.208.164", "http://192.168.235.253" })
+@CrossOrigin(origins = "*")
 public class MessageController {
 
 	public static final String ERROR_SAVE_FEEDBACK = "Não foi possível enviar seu Feedback, entre em contato com CBPGP.";
@@ -39,11 +39,6 @@ public class MessageController {
 	@RequestMapping(value = "/by-name", method = GET)
 	public ResponseEntity findAllByname(@RequestParam("name") String name) {
 		return ResponseEntity.ok(service.findAllByName(name));
-	}
-
-	@RequestMapping(method = GET)
-	public ResponseEntity findAll() {
-		return ResponseEntity.ok(service.findAll());
 	}
 
 	@RequestMapping(value = "/count", method = GET)
