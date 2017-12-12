@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
 import static org.springframework.web.bind.annotation.RequestMethod.GET;
@@ -26,9 +27,9 @@ public class MessageController {
 	}
 
 	@PostMapping
-	public ResponseEntity save(@RequestBody MessageDTO message) {
+	public ResponseEntity save(@RequestBody MessageDTO message, HttpServletRequest request) {
 		try {
-			return ResponseEntity.ok(service.save(message));
+			return ResponseEntity.ok(service.save(message, request.getRemoteAddr()));
 		} catch (IllegalArgumentException e) {
 			return ResponseEntity.badRequest().body(e.getMessage());
 		} catch (Exception e) {

@@ -52,11 +52,11 @@ public class MessageService {
 		this.messageTranslator = messageTranslator;
 	}
 
-	public Message save(MessageDTO message) {
+	public Message save(MessageDTO message, String remoteAddr) {
 		checkArgument(nonNull(message.getTo()) && nonNull(message.getNameFrom()) && hasText(message.getText()),
 				FIELDS_REQUIRED);
 		checkArgument(message.getText().length() <= 5000, MAXIMO_CARACTERES);
-		return messageRepository.save(messageTranslator.translatorDTOToMessage(message));
+		return messageRepository.save(messageTranslator.translatorDTOToMessage(message, remoteAddr));
 	}
 
 	public List<Message> findAll() {

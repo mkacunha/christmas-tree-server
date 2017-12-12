@@ -44,6 +44,9 @@ public class Message implements Serializable {
 	@Column(nullable = false)
 	private Boolean isRemote = FALSE;
 
+	@Column(name = "ip_from", length = 30)
+	private String ipFrom;
+
 	public Long getId() {
 		return id;
 	}
@@ -114,6 +117,14 @@ public class Message implements Serializable {
 
 	public void setRemote(Boolean remote) {
 		isRemote = remote;
+	}
+
+	public String getIpFrom() {
+		return ipFrom;
+	}
+
+	public void setIpFrom(String ipFrom) {
+		this.ipFrom = ipFrom;
 	}
 
 	public void changeToRead() {
