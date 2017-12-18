@@ -32,7 +32,7 @@ public class UserDTO implements Serializable {
 		return email;
 	}
 
-	public boolean isRemote() {
+	public boolean getIsRemote() {
 		return isRemote;
 	}
 }

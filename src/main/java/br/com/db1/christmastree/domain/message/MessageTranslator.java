@@ -11,7 +11,7 @@ public class MessageTranslator {
 		message.setDate(dto.getDate());
 		message.setRead(dto.getRead());
 		message.setText(dto.getText());
-		message.setRemote(dto.getTo().isRemote());
+		message.setRemote(dto.getTo().getIsRemote());
 		message.setEmailTo(dto.getTo().getEmail());
 		message.setNameFrom(dto.getNameFrom());
 		message.setNameTo(dto.getTo().getName());
