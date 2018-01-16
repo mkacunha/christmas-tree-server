@@ -32,9 +32,11 @@ public class MessageService {
 
 	private static final String URL = "http://192.168.208.164:32568/api/collaborator/getbyname/?collaboratorName=";
 
-	private final static String TEMPLATE_BASE = "<body><div style=\"width: 600px; margin: auto;\"><p><strong>Você recebeu feedbacks de natal :)</strong></p><p style=\"padding-bottom: 30px;\"><strong>Veja o que seus amigos tem a dizer para você:</strong></p> %s <p><strong>Envie seu feedback <a href=\"http://natal.db1.com.br\" target=\"_blank\">aqui</a> e faça o natal de alguém mais feliz.</strong></p><p><strong>Feliz Natal!!!</strong></p></div></body>";
+	private  static final String TEMPLATE_BASE = "<body><div style=\"width: 600px; margin: auto;\"><p><strong>Você recebeu feedbacks de natal :)</strong></p><p style=\"padding-bottom: 30px;\"><strong>Veja o que seus amigos tem a dizer para você:</strong></p> %s <p><strong>Envie seu feedback <a href=\"http://natal.db1.com.br\" target=\"_blank\">aqui</a> e faça o natal de alguém mais feliz.</strong></p><p><strong>Feliz Natal!!!</strong></p></div></body>";
 
-	public static final String MAXIMO_CARACTERES = "Seu feedback deve ter no máximo 5000 caracteres.";
+	private  static final String TEMPLATE_FINAL = "<body><div style=\"width: 600px; margin: auto;\"><p><strong>Você está recebendo uma retrospectiva de seus feedbacks :)</strong></p><p><strong>Agradecemos a todos pela participação!!!</strong></p><p><strong>Feliz 2018!!!</strong></p></div></body>";
+
+	private static final String MAXIMO_CARACTERES = "Seu feedback deve ter no máximo 5000 caracteres.";
 
 	private static Set<String> keys = new HashSet<>();
 
@@ -94,6 +96,15 @@ public class MessageService {
 				this.sendMessages(messages, email));
 	}
 
+	private void retrospectiveMessage() {
+		List<Message> dataBaseMessages = messageRepository.findAll();
+		Map<String, List<Message>> messagesGroupByRfid = dataBaseMessages.stream()
+				.collect(Collectors
+						.groupingBy(Message::getEmailTo));
+		messagesGroupByRfid.forEach((email, messages) ->
+				this.sendRetrospectiveMessages(messages, email));
+	}
+
 	@Async
 	public void sendMessages(List<Message> messages, String email) {
 		if (!isEmpty(messages) && !keys.contains(email)) {
@@ -117,8 +128,37 @@ public class MessageService {
 		}
 	}
 
+	@Async
+	public void sendRetrospectiveMessages(List<Message> messages, String email) {
+		if (!isEmpty(messages) && !keys.contains(email)) {
+			try {
+				keys.add(email);
+				MimeMessage mimeMessage = emailSender.createMimeMessage();
+				MimeMessageHelper mimeMessageHelper = new MimeMessageHelper(mimeMessage);
+				mimeMessageHelper.setSubject("Retrospectiva de feedbacks");
+				mimeMessageHelper.setTo(messages.get(0).getEmailTo());
+				StringBuilder builder = new StringBuilder();
+				messages.forEach(m -> builder.append(format(TEMPLATE_MESSAGE, m.getNameFrom(), m.getText())));
+				mimeMessageHelper.setText(String.format(TEMPLATE_FINAL, builder.toString()), true);
+				emailSender.send(mimeMessage);
+				messages.forEach(Message::changeToRead);
+				messageRepository.save(messages);
+			} catch (MessagingException e) {
+				System.out.println(e.getMessage());
+			} finally {
+				keys.remove(email);
+			}
+		}
+	}
+
 	@Scheduled(cron = "0 00 17 * * *")
 	public void enviarEmailHomeOffice() {
 		findMessagesHomeOffice();
+	}
+
+	//FIXME - Metodo que enviara mensagem de retrospectiva
+	@Scheduled(cron = "0 00 17 * * *")
+	public void enviarEmailRetrospectiva() {
+		retrospectiveMessage();
 	}
 }
