@@ -4,6 +4,7 @@ import br.com.db1.christmastree.domain.message.Message;
 import br.com.db1.christmastree.domain.message.MessageDTO;
 import br.com.db1.christmastree.domain.message.MessageService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -11,6 +12,8 @@ import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
 import static org.springframework.web.bind.annotation.RequestMethod.GET;
+import static org.springframework.web.bind.annotation.RequestMethod.POST;
+import static org.springframework.web.bind.annotation.RequestMethod.PUT;
 
 @RestController
 @RequestMapping(value = "/messages")
@@ -52,6 +55,16 @@ public class MessageController {
 		return ResponseEntity.ok(service.countToday());
 	}
 
+	@RequestMapping(value = "/unread/me", method = GET)
+	public ResponseEntity readMessage(Pageable pageable) {
+		return ResponseEntity.ok(service.findAllMessageLoggedUser(pageable));
+	}
+
+	@RequestMapping(value = "/unread/count/me", method = GET)
+	public ResponseEntity existsMessageByLoggedUser() {
+		return ResponseEntity.ok(service.countMessageLoggedUser());
+	}
+
 	@RequestMapping(value = "/read/{hash}", method = GET)
 	public ResponseEntity readMessages(@PathVariable("hash") String hash) {
 		try {
@@ -60,6 +73,24 @@ public class MessageController {
 			service.sendMessages(messages, hash);
 			System.out.println("------ Mensagem Enviada -------- " + hash);
 			return ResponseEntity.ok(messages.size());
+		} catch (Exception e) {
+			return ResponseEntity.badRequest().body(e.getMessage());
+		}
+	}
+
+	@RequestMapping(value = "/send-email/{id}", method = POST)
+	public ResponseEntity sendEmail(@PathVariable("id") long id) {
+		try {
+			return ResponseEntity.ok(service.sendEmail(id));
+		} catch (Exception e) {
+			return ResponseEntity.badRequest().body(e.getMessage());
+		}
+	}
+
+	@RequestMapping(value = "/read/{id}", method = PUT)
+	public ResponseEntity read(@PathVariable("id") long id) {
+		try {
+			return ResponseEntity.ok(service.updateMessage(id));
 		} catch (Exception e) {
 			return ResponseEntity.badRequest().body(e.getMessage());
 		}

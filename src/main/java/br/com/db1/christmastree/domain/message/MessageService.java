@@ -3,6 +3,8 @@ package br.com.db1.christmastree.domain.message;
 import br.com.db1.christmastree.domain.user.UserDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -32,9 +34,9 @@ public class MessageService {
 
 	private static final String URL = "http://192.168.208.164:32568/api/collaborator/getbyname/?collaboratorName=";
 
-	private  static final String TEMPLATE_BASE = "<body><div style=\"width: 600px; margin: auto;\"><p><strong>Você recebeu feedbacks de natal :)</strong></p><p style=\"padding-bottom: 30px;\"><strong>Veja o que seus amigos tem a dizer para você:</strong></p> %s <p><strong>Envie seu feedback <a href=\"http://natal.db1.com.br\" target=\"_blank\">aqui</a> e faça o natal de alguém mais feliz.</strong></p><p><strong>Feliz Natal!!!</strong></p></div></body>";
+	private static final String TEMPLATE_BASE = "<body><div style=\"width: 600px; margin: auto;\"><p><strong>Você recebeu feedbacks de natal :)</strong></p><p style=\"padding-bottom: 30px;\"><strong>Veja o que seus amigos tem a dizer para você:</strong></p> %s <p><strong>Envie seu feedback <a href=\"http://natal.db1.com.br\" target=\"_blank\">aqui</a> e faça o natal de alguém mais feliz.</strong></p><p><strong>Feliz Natal!!!</strong></p></div></body>";
 
-	private  static final String TEMPLATE_FINAL = "<body><div style=\"width: 600px; margin: auto;\"><p><strong>Você está recebendo uma retrospectiva de seus feedbacks :)</strong></p><p><strong>Agradecemos a todos pela participação!!!</strong></p><p><strong>Feliz 2018!!!</strong></p></div></body>";
+	private static final String TEMPLATE_FINAL = "<body><div style=\"width: 600px; margin: auto;\"><p><strong>Você está recebendo uma retrospectiva de seus feedbacks :)</strong></p><p><strong>Agradecemos a todos pela participação!!!</strong></p><p><strong>Feliz 2018!!!</strong></p></div></body>";
 
 	private static final String MAXIMO_CARACTERES = "Seu feedback deve ter no máximo 5000 caracteres.";
 
@@ -73,6 +75,12 @@ public class MessageService {
 		return user.getBody();
 	}
 
+	public Page<Message> findAllMessageLoggedUser(Pageable pageable) {
+		UserDTO dto = new UserDTO();
+		return messageRepository.findAllByEmailToAndReadFalse(dto.getEmail(), pageable);
+
+	}
+
 	public Long count() {
 		return messageRepository.count();
 	}
@@ -90,8 +98,8 @@ public class MessageService {
 	private void findMessagesHomeOffice() {
 		List<Message> dataBaseMessages = messageRepository.findAllMessageByHomeOfficeAndNotRead();
 		Map<String, List<Message>> messagesGroupByRfid = dataBaseMessages.stream()
-																		 .collect(Collectors
-																				 .groupingBy(Message::getEmailTo));
+				.collect(Collectors
+						.groupingBy(Message::getEmailTo));
 		messagesGroupByRfid.forEach((email, messages) ->
 				this.sendMessages(messages, email));
 	}
@@ -120,9 +128,11 @@ public class MessageService {
 				emailSender.send(mimeMessage);
 				messages.forEach(Message::changeToRead);
 				messageRepository.save(messages);
-			} catch (MessagingException e) {
+			}
+			catch (MessagingException e) {
 				System.out.println(e.getMessage());
-			} finally {
+			}
+			finally {
 				keys.remove(email);
 			}
 		}
@@ -143,9 +153,11 @@ public class MessageService {
 				emailSender.send(mimeMessage);
 				messages.forEach(Message::changeToRead);
 				messageRepository.save(messages);
-			} catch (MessagingException e) {
+			}
+			catch (MessagingException e) {
 				System.out.println(e.getMessage());
-			} finally {
+			}
+			finally {
 				keys.remove(email);
 			}
 		}
@@ -160,5 +172,41 @@ public class MessageService {
 	@Scheduled(cron = "0 00 17 * * *")
 	public void enviarEmailRetrospectiva() {
 		retrospectiveMessage();
+	}
+
+	public long countMessageLoggedUser() {
+		//FIXME - Usuario Logado
+		UserDTO dto = new UserDTO();
+		return messageRepository.countByEmailToAndReadFalse(dto.getEmail());
+	}
+
+	public Message updateMessage(long id) {
+		Message message = messageRepository.findOne(id);
+		message.changeToRead();
+		return messageRepository.save(message);
+	}
+
+	public Message sendEmail(long id) {
+		Message message = messageRepository.findOne(id);
+		sendMessage(message);
+		return  message;
+	}
+
+	@Async
+	public void sendMessage(Message message) {
+		try {
+			//FIXME - Usuario Logado
+			UserDTO dto = new UserDTO();
+			MimeMessage mimeMessage = emailSender.createMimeMessage();
+			MimeMessageHelper mimeMessageHelper = new MimeMessageHelper(mimeMessage);
+			mimeMessageHelper.setSubject("Feedbacks de Natal :):)");
+			mimeMessageHelper.setTo(dto.getEmail());
+			String formatMessage = format(TEMPLATE_MESSAGE, message.getNameFrom(), message.getText());
+			mimeMessageHelper.setText(String.format(TEMPLATE_BASE, formatMessage), true);
+			emailSender.send(mimeMessage);
+		}
+		catch (MessagingException e) {
+			System.out.println(e.getMessage());
+		}
 	}
 }

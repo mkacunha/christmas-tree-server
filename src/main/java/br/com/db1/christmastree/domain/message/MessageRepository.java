@@ -1,6 +1,8 @@
 package br.com.db1.christmastree.domain.message;
 
 import br.com.db1.christmastree.domain.user.UserDTO;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.jpa.repository.Temporal;
 import org.springframework.data.repository.CrudRepository;
@@ -26,4 +28,8 @@ public interface MessageRepository extends CrudRepository<Message, Long> {
 	@Query("SELECT m FROM Message m " +
 			"WHERE m.read = false AND m.isRemote = true")
 	List<Message> findAllMessageByHomeOfficeAndNotRead();
+
+	Page<Message> findAllByEmailToAndReadFalse(String emailTo, Pageable pageable);
+
+	long countByEmailToAndReadFalse(String emailTo);
 }
