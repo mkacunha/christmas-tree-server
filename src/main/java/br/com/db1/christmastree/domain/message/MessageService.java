@@ -127,7 +127,7 @@ public class MessageService {
 				mimeMessageHelper.setText(String.format(TEMPLATE_BASE, builder.toString()), true);
 				emailSender.send(mimeMessage);
 				messages.forEach(Message::changeToRead);
-				messageRepository.save(messages);
+				messageRepository.saveAll(messages);
 			}
 			catch (MessagingException e) {
 				System.out.println(e.getMessage());
@@ -152,7 +152,7 @@ public class MessageService {
 				mimeMessageHelper.setText(String.format(TEMPLATE_FINAL, builder.toString()), true);
 				emailSender.send(mimeMessage);
 				messages.forEach(Message::changeToRead);
-				messageRepository.save(messages);
+				messageRepository.saveAll(messages);
 			}
 			catch (MessagingException e) {
 				System.out.println(e.getMessage());
@@ -181,13 +181,13 @@ public class MessageService {
 	}
 
 	public Message updateMessage(long id) {
-		Message message = messageRepository.findOne(id);
+		Message message = messageRepository.findById(id).orElse(null);
 		message.changeToRead();
 		return messageRepository.save(message);
 	}
 
 	public Message sendEmail(long id) {
-		Message message = messageRepository.findOne(id);
+		Message message = messageRepository.findById(id).orElse(null);
 		sendMessage(message);
 		return  message;
 	}
