@@ -17,17 +17,9 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
 	@Override
 	protected void configure(HttpSecurity http) throws Exception {
-
-//        http.authorizeRequests().antMatchers("/home").permitAll();
         http.authorizeRequests().antMatchers("/messages/**").authenticated();
-//
         http.logout().logoutRequestMatcher(new AntPathRequestMatcher("/logout"))
                 .logoutSuccessUrl("/").deleteCookies("JSESSIONID").invalidateHttpSession(true);
-//
-//        http.authorizeRequests().anyRequest().permitAll();
-//
-//        http.csrf().csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse());
-
 		http.addFilterBefore(aadAuthFilter, UsernamePasswordAuthenticationFilter.class);
 	}
 }
