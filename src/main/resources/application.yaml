@@ -1,0 +1,40 @@
+spring:
+  jpa:
+    database: MYSQL
+    show-sql: true
+    generate-ddl: true
+    hibernate.ddl-auto: update
+  datasource:
+    platform: mysql
+    url: ${DATABASE_URL:jdbc:mysql://localhost:3306/christimas}
+    username: ${DATABASE_USER:christimas}
+    password: ${DATABASE_PASSWORD:123456}
+  database:
+    driverClassName: com.mysql.jdbc.Driver
+  mail:
+    host: ${SMTP_ADDRESS:smtp.gmail.com}
+    username: ${SMTP_USERNAME:}
+    password: ${SMTP_PASSWORD}
+    properties:
+      mail:
+        transport.protocol: smtp
+        smtp:
+          port: 587
+          auth: true
+          starttls:
+            enable: true
+            required: true
+  ldap:
+    urls: ldap://db1-dc02.db1.com.br:3268
+    base: dc=db1,dc=com,dc=br
+    username: maiko.cunha@db1.com.br
+    password: m07A05c89@
+
+server:
+  port: 8080
+
+azure:
+  activedirectory:
+    client-id: ${CLIENT_ID}
+    client-secret: ${CLIENT_SECRET}
+    active-directory-groups: ${GROUPS}
