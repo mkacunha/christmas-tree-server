@@ -50,4 +50,8 @@ public class UserService {
                 .forEach(userRepository::save);
         LOGGER.info("Terminou processamento de usuário ativos do AD para serem salvos no banco de dados local");
     }
+
+    public List<User> findByName(String name) {
+        return userRepository.findByNameContainingIgnoreCase(name);
+    }
 }
