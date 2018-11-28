@@ -1,83 +1,92 @@
 package br.com.db1.christmastree.domain.message;
 
-import br.com.db1.christmastree.domain.user.UserDTO;
-
 import java.io.Serializable;
 import java.util.Date;
 
-import static java.lang.Boolean.*;
+import static java.lang.Boolean.FALSE;
 
 public class MessageDTO implements Serializable {
 
-	private static final long serialVersionUID = 120552849520519299L;
+    private static final long serialVersionUID = 120552849520519299L;
 
-	private Long id;
+    private Long id;
 
-	private String nameFrom;
+    private String nameFrom;
 
-	private UserDTO to;
+    private String emailFrom;
 
-	private String text;
+    private String nameTo;
 
-	private Date date = new Date();
+    private String emailTo;
 
-	private Boolean read = FALSE;
+    private String text;
 
-	private Boolean isRemote;
+    private Date date = new Date();
 
-	public Long getId() {
-		return id;
-	}
+    private Boolean read = FALSE;
 
-	public void setId(Long id) {
-		this.id = id;
-	}
 
-	public String getNameFrom() {
-		return nameFrom;
-	}
+    public Long getId() {
+        return id;
+    }
 
-	public void setNameFrom(String nameFrom) {
-		this.nameFrom = nameFrom;
-	}
+    public void setId(Long id) {
+        this.id = id;
+    }
 
-	public UserDTO getTo() {
-		return to;
-	}
+    public String getNameFrom() {
+        return nameFrom;
+    }
 
-	public void setTo(UserDTO to) {
-		this.to = to;
-	}
+    public void setNameFrom(String nameFrom) {
+        this.nameFrom = nameFrom;
+    }
 
-	public String getText() {
-		return text;
-	}
+    public String getEmailFrom() {
+        return emailFrom;
+    }
 
-	public void setText(String text) {
-		this.text = text;
-	}
+    public void setEmailFrom(String emailFrom) {
+        this.emailFrom = emailFrom;
+    }
 
-	public Date getDate() {
-		return date;
-	}
+    public String getNameTo() {
+        return nameTo;
+    }
 
-	public void setDate(Date date) {
-		this.date = date;
-	}
+    public void setNameTo(String nameTo) {
+        this.nameTo = nameTo;
+    }
 
-	public Boolean getRead() {
-		return read;
-	}
+    public String getEmailTo() {
+        return emailTo;
+    }
 
-	public void setRead(Boolean read) {
-		this.read = read;
-	}
+    public void setEmailTo(String emailTo) {
+        this.emailTo = emailTo;
+    }
 
-	public Boolean getRemote() {
-		return isRemote;
-	}
+    public String getText() {
+        return text;
+    }
 
-	public void setRemote(Boolean remote) {
-		isRemote = remote;
-	}
+    public void setText(String text) {
+        this.text = text;
+    }
+
+    public Date getDate() {
+        return date;
+    }
+
+    public void setDate(Date date) {
+        this.date = date;
+    }
+
+    public Boolean getRead() {
+        return read;
+    }
+
+    public void setRead(Boolean read) {
+        this.read = read;
+    }
 }

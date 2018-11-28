@@ -19,16 +19,16 @@ public class Message implements Serializable {
 	@GeneratedValue(strategy = IDENTITY)
 	private Long id;
 
-	@Column(nullable = false)
+	@Column(nullable = false, name = "name_from")
 	private String  nameFrom;
 
-	@Column(nullable = false)
+	@Column(nullable = false, name = "email_from")
+	private String emailFrom;
+
+	@Column(nullable = false, name = "email_to")
 	private String  emailTo;
 
-	@Column
-	private String  rfidTo;
-
-	@Column(nullable = false)
+	@Column(nullable = false, name = "name_to")
 	private String  nameTo;
 
 	@Column(name = "message_text", nullable = false, length = 1000)
@@ -40,9 +40,6 @@ public class Message implements Serializable {
 
 	@Column(name = "message_read", nullable = false)
 	private Boolean read = FALSE;
-
-	@Column(nullable = false)
-	private Boolean isRemote = FALSE;
 
 	@Column(name = "ip_from", length = 30)
 	private String ipFrom;
@@ -63,20 +60,20 @@ public class Message implements Serializable {
 		this.nameFrom = nameFrom;
 	}
 
+	public String getEmailFrom() {
+		return emailFrom;
+	}
+
+	public void setEmailFrom(String emailFrom) {
+		this.emailFrom = emailFrom;
+	}
+
 	public String getEmailTo() {
 		return emailTo;
 	}
 
 	public void setEmailTo(String emailTo) {
 		this.emailTo = emailTo;
-	}
-
-	public String getRfidTo() {
-		return rfidTo;
-	}
-
-	public void setRfidTo(String rfidTo) {
-		this.rfidTo = rfidTo;
 	}
 
 	public String getNameTo() {
@@ -111,14 +108,6 @@ public class Message implements Serializable {
 		this.read = read;
 	}
 
-	public Boolean getRemote() {
-		return isRemote;
-	}
-
-	public void setRemote(Boolean remote) {
-		isRemote = remote;
-	}
-
 	public String getIpFrom() {
 		return ipFrom;
 	}
@@ -127,7 +116,7 @@ public class Message implements Serializable {
 		this.ipFrom = ipFrom;
 	}
 
-	public void changeToRead() {
-		read = TRUE;
+	public  void changeToRead() {
+		this.read = true;
 	}
 }

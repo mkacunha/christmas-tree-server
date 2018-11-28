@@ -22,14 +22,17 @@ public interface MessageRepository extends CrudRepository<Message, Long> {
 	long countByDate(@Temporal(DATE) Date date);
 
 	@Query("SELECT m FROM Message m " +
-			"WHERE m.rfidTo = :rfid AND m.read = false")
+			"WHERE m.read = false")
 	List<Message> findAllMessageByMailAndNotRead(@Param("rfid") String rfid);
 
 	@Query("SELECT m FROM Message m " +
-			"WHERE m.read = false AND m.isRemote = true")
+			"WHERE m.read = false")
 	List<Message> findAllMessageByHomeOfficeAndNotRead();
 
-	Page<Message> findAllByEmailToAndReadFalse(String emailTo, Pageable pageable);
+	List<Message> findAllByEmailToAndReadFalse(String emailTo);
+
+
+	Page<Message> findAllByEmailTo(String emailTo, Pageable pageable);
 
 	long countByEmailToAndReadFalse(String emailTo);
 }

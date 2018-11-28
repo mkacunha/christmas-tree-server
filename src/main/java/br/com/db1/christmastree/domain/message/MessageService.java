@@ -12,6 +12,7 @@ import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
 
 import javax.mail.MessagingException;
@@ -57,10 +58,25 @@ public class MessageService {
 	}
 
 	public Message save(MessageDTO message, String remoteAddr) {
-		checkArgument(nonNull(message.getTo()) && nonNull(message.getNameFrom()) && hasText(message.getText()),
+		checkArgument(nonNull(message.getEmailTo()) && nonNull(message.getNameFrom()) && hasText(message.getText()),
 				FIELDS_REQUIRED);
 		checkArgument(message.getText().length() <= 5000, MAXIMO_CARACTERES);
 		return messageRepository.save(messageTranslator.translatorDTOToMessage(message, remoteAddr));
+	}
+
+
+	@Transactional
+	public List<Message> findUnReadMessageLoggedUser(String emailUserLogged) {
+		List<Message> messages = messageRepository.findAllByEmailToAndReadFalse(emailUserLogged);
+		messages.forEach(message -> {
+			message.changeToRead();
+			messageRepository.save(message);
+		});
+		return messages;
+	}
+
+	public Page<Message> findAllMessageLoggedUser(Pageable pageable, String emailUserLogged) {
+		return messageRepository.findAllByEmailTo(emailUserLogged, pageable);
 	}
 
 	public List<Message> findAll() {
@@ -73,12 +89,6 @@ public class MessageService {
 				.exchange(URL + name, HttpMethod.GET, null, new ParameterizedTypeReference<List<UserDTO>>() {
 				});
 		return user.getBody();
-	}
-
-	public Page<Message> findAllMessageLoggedUser(Pageable pageable) {
-		UserDTO dto = new UserDTO();
-		return messageRepository.findAllByEmailToAndReadFalse(dto.getEmail(), pageable);
-
 	}
 
 	public Long count() {

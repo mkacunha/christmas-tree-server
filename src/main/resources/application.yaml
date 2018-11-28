@@ -6,7 +6,7 @@ spring:
     hibernate.ddl-auto: update
   datasource:
     platform: mysql
-    url: ${DATABASE_URL:jdbc:mysql://localhost:3306/christimas}
+    url: ${DATABASE_URL:jdbc:mysql://192.168.99.100:3306/christimas}
     username: ${DATABASE_USER:christimas}
     password: ${DATABASE_PASSWORD:123456}
   database:
@@ -25,10 +25,10 @@ spring:
             enable: true
             required: true
   ldap:
-    urls: ldap://db1-dc02.db1.com.br:3268
-    base: dc=db1,dc=com,dc=br
-    username: maiko.cunha@db1.com.br
-    password: m07A05c89@
+    urls: ${LADAP_URLS}
+    base: ${LDAP_BASE}
+    username: ${LDAP_USERNAME}
+    password: ${LDAP_PASSWORD}
 
 server:
   port: 8080
@@ -37,4 +37,4 @@ azure:
   activedirectory:
     client-id: ${CLIENT_ID}
     client-secret: ${CLIENT_SECRET}
-    active-directory-groups: ${GROUPS}
+    ActiveDirectoryGroups: ${GROUPS}

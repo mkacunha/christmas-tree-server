@@ -30,7 +30,6 @@ public class UserService {
     public List<UserAd> getAllUsersActive() {
         LdapQuery query = LdapQueryBuilder.query()
                 .searchScope(SearchScope.SUBTREE)
-                .timeLimit(THREE_SECONDS)
                 .attributes("cn", "ou", "uid", "mail")
                 .base(LdapUtils.emptyLdapName())
                 .where("objectclass").is("person");
@@ -53,5 +52,9 @@ public class UserService {
 
     public List<User> findByName(String name) {
         return userRepository.findByNameContainingIgnoreCase(name);
+    }
+
+    public User findByMail(String mail) {
+        return userRepository.findByMail(mail).orElseThrow(() -> new RuntimeException("Usuário de e-mail " + mail + " não encontrado na base de dados"));
     }
 }
