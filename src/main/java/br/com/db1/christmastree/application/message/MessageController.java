@@ -19,7 +19,6 @@ import java.util.List;
 import static org.springframework.web.bind.annotation.RequestMethod.*;
 
 @RestController
-@RequestMapping(value = "/api/messages")
 public class MessageController {
 
     public static final String ERROR_SAVE_FEEDBACK = "Não foi possível enviar seu Feedback, entre em contato com CBPGP.";
@@ -34,7 +33,7 @@ public class MessageController {
         this.userService = userService;
     }
 
-    @PostMapping
+    @PostMapping("/api/messages")
     @PreAuthorize("hasRole('ROLE_USER')")
     public ResponseEntity save(@RequestBody MessageDTO message, HttpServletRequest request, PreAuthenticatedAuthenticationToken authToken) {
         try {
@@ -52,19 +51,19 @@ public class MessageController {
 
     }
 
-    @RequestMapping(value = "/unread/me", method = GET)
+    @RequestMapping(value = "/api/messages/unread/me", method = GET)
     public ResponseEntity unreadMessage(PreAuthenticatedAuthenticationToken authToken) {
         UserLogged userLogged = UserLogged.of(authToken);
         return ResponseEntity.ok(service.findUnReadMessageLoggedUser(userLogged.getEmail()));
     }
 
-    @RequestMapping(value = "/all/me", method = GET)
+    @RequestMapping(value = "/api/messages/all/me", method = GET)
     public ResponseEntity allMe(Pageable pageable, PreAuthenticatedAuthenticationToken authToken) {
         UserLogged userLogged = UserLogged.of(authToken);
         return ResponseEntity.ok(service.findAllMessageLoggedUser(pageable, userLogged.getEmail()));
     }
 
-    @RequestMapping(value = "/by-name", method = GET)
+    @RequestMapping(value = "/api/messages/by-name", method = GET)
     public ResponseEntity findAllByname(@RequestParam("name") String name) {
         return ResponseEntity.ok(service.findAllByName(name));
     }
@@ -80,12 +79,12 @@ public class MessageController {
     }
 
 
-    @RequestMapping(value = "/unread/count/me", method = GET)
+    @RequestMapping(value = "/api/messages/unread/count/me", method = GET)
     public ResponseEntity existsMessageByLoggedUser() {
         return ResponseEntity.ok(service.countMessageLoggedUser());
     }
 
-    @RequestMapping(value = "/read/{hash}", method = GET)
+    @RequestMapping(value = "/api/messages/read/{hash}", method = GET)
     public ResponseEntity readMessages(@PathVariable("hash") String hash) {
         try {
             System.out.println("------ Enviando Mensagem -------- " + hash);
@@ -98,7 +97,7 @@ public class MessageController {
         }
     }
 
-    @RequestMapping(value = "/send-email/{id}", method = POST)
+    @RequestMapping(value = "/api/messages/send-email/{id}", method = POST)
     public ResponseEntity sendEmail(@PathVariable("id") long id) {
         try {
             return ResponseEntity.ok(service.sendEmail(id));
@@ -107,7 +106,7 @@ public class MessageController {
         }
     }
 
-    @RequestMapping(value = "/read/{id}", method = PUT)
+    @RequestMapping(value = "/api/messages/read/{id}", method = PUT)
     public ResponseEntity read(@PathVariable("id") long id) {
         try {
             return ResponseEntity.ok(service.updateMessage(id));

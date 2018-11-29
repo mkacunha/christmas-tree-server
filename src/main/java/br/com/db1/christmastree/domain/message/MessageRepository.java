@@ -32,7 +32,7 @@ public interface MessageRepository extends CrudRepository<Message, Long> {
 	List<Message> findAllByEmailToAndReadFalse(String emailTo);
 
 
-	Page<Message> findAllByEmailTo(String emailTo, Pageable pageable);
+	Page<Message> findAllByEmailToAndReadTrue(String emailTo, Pageable pageable);
 
 	long countByEmailToAndReadFalse(String emailTo);
 }

@@ -76,7 +76,7 @@ public class MessageService {
 	}
 
 	public Page<Message> findAllMessageLoggedUser(Pageable pageable, String emailUserLogged) {
-		return messageRepository.findAllByEmailTo(emailUserLogged, pageable);
+		return messageRepository.findAllByEmailToAndReadTrue(emailUserLogged, pageable);
 	}
 
 	public List<Message> findAll() {
