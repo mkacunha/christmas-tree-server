@@ -25,7 +25,6 @@ public class MessageDTO implements Serializable {
 
     private Boolean read = FALSE;
 
-
     public Long getId() {
         return id;
     }

@@ -57,6 +57,12 @@ public class MessageController {
         return ResponseEntity.ok(service.findUnReadMessageLoggedUser(userLogged.getEmail()));
     }
 
+    @RequestMapping(value = "/api/messages/unread/count/me", method = GET)
+    public ResponseEntity countUnreadMessage(PreAuthenticatedAuthenticationToken authToken) {
+        UserLogged userLogged = UserLogged.of(authToken);
+        return ResponseEntity.ok(service.countMessageLoggedUser(userLogged.getEmail()));
+    }
+
     @RequestMapping(value = "/api/messages/all/me", method = GET)
     public ResponseEntity allMe(Pageable pageable, PreAuthenticatedAuthenticationToken authToken) {
         UserLogged userLogged = UserLogged.of(authToken);
@@ -78,11 +84,6 @@ public class MessageController {
         return ResponseEntity.ok(service.countToday());
     }
 
-
-    @RequestMapping(value = "/api/messages/unread/count/me", method = GET)
-    public ResponseEntity existsMessageByLoggedUser() {
-        return ResponseEntity.ok(service.countMessageLoggedUser());
-    }
 
     @RequestMapping(value = "/api/messages/read/{hash}", method = GET)
     public ResponseEntity readMessages(@PathVariable("hash") String hash) {

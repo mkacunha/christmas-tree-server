@@ -33,7 +33,7 @@ public interface MessageRepository extends JpaRepository<Message, Long> {
 	List<Message> findAllByEmailToAndReadFalse(String emailTo);
 
 
-	Page<Message> findAllByEmailToAndReadTrue(String emailTo, Pageable pageable);
+	Page<Message> findAllByEmailToOrderByIdDesc(String emailTo, Pageable pageable);
 
 	long countByEmailToAndReadFalse(String emailTo);
 }

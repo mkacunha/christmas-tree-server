@@ -44,6 +44,9 @@ public class Message implements Serializable {
 	@Column(name = "ip_from", length = 30)
 	private String ipFrom;
 
+	@Transient
+	private Boolean lido = Boolean.TRUE;
+
 	public Long getId() {
 		return id;
 	}
@@ -116,7 +119,16 @@ public class Message implements Serializable {
 		this.ipFrom = ipFrom;
 	}
 
+	public Boolean getLido() {
+		return lido;
+	}
+
+	public void setLido(Boolean lido) {
+		this.lido = lido;
+	}
+
 	public  void changeToRead() {
 		this.read = true;
+		this.lido = false;
 	}
 }
