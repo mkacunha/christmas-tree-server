@@ -10,6 +10,7 @@ import org.springframework.ldap.query.SearchScope;
 import org.springframework.ldap.support.LdapUtils;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -34,6 +35,7 @@ public class UserService {
                 .base(LdapUtils.emptyLdapName())
                 .where("objectclass").is("person");
         List<UserAd> usersAd = ldapTemplate.search(query, new UserAdAttributesMapper());
+        usersAd.stream().filter(user -> user.isGrupoAtivo() && !StringUtils.hasText(user.getMail())).forEach(user -> LOGGER.info("User sem e-mail: {}", user));
         return usersAd.stream().filter(UserAd::isValid).collect(Collectors.toList());
     }
 

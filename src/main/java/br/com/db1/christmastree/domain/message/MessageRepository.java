@@ -3,6 +3,7 @@ package br.com.db1.christmastree.domain.message;
 import br.com.db1.christmastree.domain.user.UserDTO;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.jpa.repository.Temporal;
 import org.springframework.data.repository.CrudRepository;
@@ -15,7 +16,7 @@ import java.util.List;
 import static javax.persistence.TemporalType.DATE;
 
 @Repository
-public interface MessageRepository extends CrudRepository<Message, Long> {
+public interface MessageRepository extends JpaRepository<Message, Long> {
 
 	List<Message> findAll();
 
