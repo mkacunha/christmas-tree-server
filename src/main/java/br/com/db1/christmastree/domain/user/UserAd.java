@@ -1,5 +1,7 @@
 package br.com.db1.christmastree.domain.user;
 
+import org.springframework.util.StringUtils;
+
 public class UserAd {
 
     private String name;
@@ -30,6 +32,10 @@ public class UserAd {
 
     public void setGrupoAtivo(boolean grupoAtivo) {
         this.grupoAtivo = grupoAtivo;
+    }
+
+    public boolean isValid() {
+        return isGrupoAtivo() && StringUtils.hasText(mail);
     }
 
     @Override

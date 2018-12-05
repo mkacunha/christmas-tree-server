@@ -34,7 +34,7 @@ public class UserService {
                 .base(LdapUtils.emptyLdapName())
                 .where("objectclass").is("person");
         List<UserAd> usersAd = ldapTemplate.search(query, new UserAdAttributesMapper());
-        return usersAd.stream().filter(UserAd::isGrupoAtivo).collect(Collectors.toList());
+        return usersAd.stream().filter(UserAd::isValid).collect(Collectors.toList());
     }
 
     @Scheduled(cron = "0 0 1 * * *")
