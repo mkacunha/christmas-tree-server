@@ -1,13 +1,9 @@
 package br.com.db1.christmastree.domain.message;
 
-import br.com.db1.christmastree.domain.user.UserDTO;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.jpa.repository.Temporal;
-import org.springframework.data.repository.CrudRepository;
-import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.Date;
@@ -18,22 +14,11 @@ import static javax.persistence.TemporalType.DATE;
 @Repository
 public interface MessageRepository extends JpaRepository<Message, Long> {
 
-	List<Message> findAll();
+    List<Message> findAll();
 
-	long countByDate(@Temporal(DATE) Date date);
+    long countByDate(@Temporal(DATE) Date date);
 
-	@Query("SELECT m FROM Message m " +
-			"WHERE m.read = false")
-	List<Message> findAllMessageByMailAndNotRead(@Param("rfid") String rfid);
+    List<Message> findAllByEmailToAndStatusIn(String emailTo, List<MessageStatus> status);
 
-	@Query("SELECT m FROM Message m " +
-			"WHERE m.read = false")
-	List<Message> findAllMessageByHomeOfficeAndNotRead();
-
-	List<Message> findAllByEmailToAndReadFalse(String emailTo);
-
-
-	Page<Message> findAllByEmailToOrderByIdDesc(String emailTo, Pageable pageable);
-
-	long countByEmailToAndReadFalse(String emailTo);
+    Page<Message> findAllByEmailToAndStatusInOrderByIdDesc(String emailTo, List<MessageStatus> status, Pageable pageable);
 }

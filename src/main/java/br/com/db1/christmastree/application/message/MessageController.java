@@ -1,6 +1,5 @@
 package br.com.db1.christmastree.application.message;
 
-import br.com.db1.christmastree.domain.message.Message;
 import br.com.db1.christmastree.domain.message.MessageDTO;
 import br.com.db1.christmastree.domain.message.MessageService;
 import br.com.db1.christmastree.domain.user.User;
@@ -11,12 +10,14 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.web.authentication.preauth.PreAuthenticatedAuthenticationToken;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.List;
 
-import static org.springframework.web.bind.annotation.RequestMethod.*;
+import static org.springframework.web.bind.annotation.RequestMethod.GET;
 
 @RestController
 public class MessageController {
@@ -51,10 +52,14 @@ public class MessageController {
 
     }
 
-    @RequestMapping(value = "/api/messages/unread/me", method = GET)
-    public ResponseEntity unreadMessage(PreAuthenticatedAuthenticationToken authToken) {
-        UserLogged userLogged = UserLogged.of(authToken);
-        return ResponseEntity.ok(service.findUnReadMessageLoggedUser(userLogged.getEmail()));
+    @PostMapping("/api/messages/read")
+    @PreAuthorize("hasRole('ROLE_USER')")
+    public ResponseEntity changeToRead(@RequestBody MessageDTO message) {
+        if (message.getId() == null) {
+            return ResponseEntity.badRequest().body("ID da mensagem deve ser informado");
+        }
+        service.changeToRead(message.getId());
+        return ResponseEntity.ok("success");
     }
 
     @RequestMapping(value = "/api/messages/unread/count/me", method = GET)
@@ -69,11 +74,6 @@ public class MessageController {
         return ResponseEntity.ok(service.findAllMessageLoggedUser(pageable, userLogged.getEmail()));
     }
 
-    @RequestMapping(value = "/api/messages/by-name", method = GET)
-    public ResponseEntity findAllByname(@RequestParam("name") String name) {
-        return ResponseEntity.ok(service.findAllByName(name));
-    }
-
     @RequestMapping(value = "/count", method = GET)
     public ResponseEntity count() {
         return ResponseEntity.ok(service.count());
@@ -82,37 +82,5 @@ public class MessageController {
     @RequestMapping(value = "/count-today", method = GET)
     public ResponseEntity countToday() {
         return ResponseEntity.ok(service.countToday());
-    }
-
-
-    @RequestMapping(value = "/api/messages/read/{hash}", method = GET)
-    public ResponseEntity readMessages(@PathVariable("hash") String hash) {
-        try {
-            System.out.println("------ Enviando Mensagem -------- " + hash);
-            final List<Message> messages = service.findMessagesByRfid(hash);
-            service.sendMessages(messages, hash);
-            System.out.println("------ Mensagem Enviada -------- " + hash);
-            return ResponseEntity.ok(messages.size());
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
-        }
-    }
-
-    @RequestMapping(value = "/api/messages/send-email/{id}", method = POST)
-    public ResponseEntity sendEmail(@PathVariable("id") long id) {
-        try {
-            return ResponseEntity.ok(service.sendEmail(id));
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
-        }
-    }
-
-    @RequestMapping(value = "/api/messages/read/{id}", method = PUT)
-    public ResponseEntity read(@PathVariable("id") long id) {
-        try {
-            return ResponseEntity.ok(service.updateMessage(id));
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
-        }
     }
 }
